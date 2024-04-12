@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>心理测评</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #e1f0ee; /* Soft pastel background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #e1f0ee; /* Set default text color to white */
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            background: #8bc4bc; /* Dark background for contrast with white text */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .question {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .question.active {
+            display: block;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        label {
+            padding: 10px;
+            background-color: #eceff1e3; /* Light grey for labels, updated to maintain readability */
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        input[type="radio"] {
+            display: none;
+        }
+        label:hover {
+            background-color: #4caf50; /* Darker grey on hover */
+        }
+        .selected {
+            background-color: #4b2643; /* Green background for selected options */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>心理测评问卷</h1>
+        <form id="quizForm">
+            <div class="question active" id="q1">
+                <p>问题1：你平时喜欢阅读吗？</p>
+                <div class="options">
+                    <label onclick="nextQuestion(1, this)">是<input type="radio" name="q1" value="yes"></label>
+                    <label onclick="nextQuestion(1, this)">否<input type="radio" name="q1" value="no"></label>
+                </div>
+            </div>
+            <!-- Continue this pattern for more questions -->
+        </form>
+    </div>
+    <script>
+        function nextQuestion(current, selectedLabel) {
+            // Highlight the selected label
+            var labels = document.querySelectorAll('#q' + current + ' label');
+            labels.forEach(function(label) {
+                label.classList.remove('selected');
+            });
+            selectedLabel.classList.add('selected');
+
+            // Proceed to the next question after a short delay
+            setTimeout(function() {
+                var currentQuestion = document.getElementById('q' + current);
+                var nextQuestion = document.getElementById('q' + (current + 1));
+                if (nextQuestion) {
+                    currentQuestion.classList.remove('active');
+                    nextQuestion.classList.add('active');
+                } else {
+                    alert('这是最后一道题。');
+                }
+            }, 500); // Delay can be adjusted based on user experience requirements
+        }
+    </script>
+</body>
+</html>
