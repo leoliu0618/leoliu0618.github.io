@@ -6,22 +6,23 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: #e1f0ee; /* Soft pastel background */
+            background: #e1f0ee;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: #e1f0ee; /* Set default text color to white */
+            color: #ffffff;
         }
         .container {
             width: 80%;
             max-width: 600px;
-            background: #8bc4bc; /* Dark background for contrast with white text */
+            background: #8bc4bc;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-sizing: border-box; /* Ensures padding is included in width */
         }
         h1 {
             text-align: center;
@@ -38,7 +39,7 @@
         }
         label {
             padding: 10px;
-            background-color: #eceff1e3; /* Light grey for labels, updated to maintain readability */
+            background-color: #eceff1e3;
             display: block;
             margin-bottom: 5px;
             cursor: pointer;
@@ -48,10 +49,29 @@
             display: none;
         }
         label:hover {
-            background-color: #4caf50; /* Darker grey on hover */
+            background-color: #4caf50;
         }
         .selected {
-            background-color: #4b2643; /* Green background for selected options */
+            background-color: #4b2643;
+            color: white;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                padding: 20px;
+            }
+            .container {
+                width: 100%;
+                max-width: none;
+                padding: 10px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            label {
+                font-size: 14px; /* Adjust font size for smaller screens */
+            }
         }
     </style>
 </head>
@@ -59,36 +79,62 @@
     <div class="container">
         <h1>心理测评问卷</h1>
         <form id="quizForm">
-            <div class="question active" id="q1">
-                <p>问题1：你平时喜欢阅读吗？</p>
-                <div class="options">
-                    <label onclick="nextQuestion(1, this)">是<input type="radio" name="q1" value="yes"></label>
-                    <label onclick="nextQuestion(1, this)">否<input type="radio" name="q1" value="no"></label>
-                </div>
-            </div>
-            <!-- Continue this pattern for more questions -->
+            <!-- Questions will be dynamically generated here -->
         </form>
     </div>
     <script>
-        function nextQuestion(current, selectedLabel) {
-            // Highlight the selected label
-            var labels = document.querySelectorAll('#q' + current + ' label');
-            labels.forEach(function(label) {
-                label.classList.remove('selected');
-            });
-            selectedLabel.classList.add('selected');
+        const questions = [
+            { question: "1. 你的最早记忆是积极的还是消极的？", options: ["是", "否"] },
+            { question: "2. 在你的童年家庭中，谁是决策者？", options: ["父亲", "母亲", "其他家庭成员"] },
+            { question: "3. 你是否曾在童年感觉被误解？", options: ["是", "否"] },
+            { question: "4. 你童年最好的朋友对你有何种影响？", options: ["积极的", "消极的", "无特别影响"] },
+            { question: "5. 你小时候害怕的事情现在还害怕吗？", options: ["是", "否"] },
+            { question: "6. 你小时候经常梦到什么？", options: ["追逐", "飞翔", "掉落", "其他"] },
+            { question: "7. 你童年时期最喜欢的游戏反映了哪些性格特点？", options: ["领导力", "创造力", "团队合作", "独立性"] },
+            { question: "8. 你是否认为有童年的某一刻定义了你今天的部分身份？", options: ["是", "否"] },
+            { question: "9. 你小时候最不喜欢哪门课？", options: ["数学", "语文", "英语", "科学", "其他"] },
+            { question: "10. 童年中的一次旅行如何影响了你对世界的看法？", options: ["拓宽了视野", "增加了好奇心", "无影响", "其他"] },
+            { question: "11. 小时候，你如何处理失望和挫折？", options: ["哭泣", "发脾气", "寻找解决方案", "忽略"] },
+            { question: "12. 你童年最珍贵的一件物品现在对你意味着什么？", options: ["非常重要", "有一定意义", "无意义", "已遗忘"] },
+            { question: "13. 你是否有童年梦想未能实现？", options: ["是", "否"] },
+            { question: "14. 童年时期家庭中有无特定的传统或习俗？", options: ["是", "否"] },
+            { question: "15. 你是否曾在童年经历极度恐惧？", options: ["是", "否"] },
+            { question: "16. 童年时期对你影响最大的老师教会了你什么？", options: ["勇敢", "诚实", "努力", "尊重", "其他"] },
+            { question: "17. 你是否在童年时期有过自豪的成就？", options: ["是", "否"] },
+            { question: "18. 你小时候最常听的音乐或歌曲对你的音乐品味有何影响？", options: ["极大影响", "一定影响", "无影响"] },
+            { question: "19. 你是否经历过童年家庭变动？", options: ["是", "否"] },
+            { question: "20. 你认为哪一件童年事情最影响了你的自信心？", options: ["成功的经历", "失败的经历", "家庭的支持", "老师的鼓励", "其他"] },
+            { question: "21. 童年因别人的话改变了看法或行动吗？", options: ["是", "否"] }
+        ];
 
-            // Proceed to the next question after a short delay
-            setTimeout(function() {
-                var currentQuestion = document.getElementById('q' + current);
-                var nextQuestion = document.getElementById('q' + (current + 1));
+        window.onload = generateQuestions;
+        function generateQuestions() {
+            const form = document.getElementById('quizForm');
+            questions.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'question' + (index === 0 ? ' active' : '');
+                div.id = 'q' + (index + 1);
+                div.innerHTML = `<p>${item.question}</p><div class="options">` +
+                                item.options.map(option => `<label onclick="selectOption(${index + 1}, this)">` +
+                                `${option}<input type="radio" name="q${index + 1}" value="${option}"></label>`).join('') + `</div>`;
+                form.appendChild(div);
+            });
+        }
+
+        function selectOption(current, selectedLabel) {
+            const labels = document.querySelectorAll('#q' + current + ' label');
+            labels.forEach(label => label.classList.remove('selected'));
+            selectedLabel.classList.add('selected');
+            setTimeout(() => {
+                const currentQuestion = document.getElementById('q' + current);
+                const nextQuestion = document.getElementById('q' + (current + 1));
                 if (nextQuestion) {
                     currentQuestion.classList.remove('active');
                     nextQuestion.classList.add('active');
                 } else {
                     alert('这是最后一道题。');
                 }
-            }, 500); // Delay can be adjusted based on user experience requirements
+            }, 500);
         }
     </script>
 </body>
